@@ -1,0 +1,36 @@
+<!doctype html>
+<!-- Decimen Optical Transfer v0.5.3 — https://decimen.app — (c) 2026 Evan Crawley (Bash Alarmist) — SPDX-License-Identifier: AGPL-3.0-or-later — portions MIT: (c) 2026 Steve Dakh; Emscripten (see NOTICE) — Source: https://github.com/bashalarmistalt/decimen-optical-transfer -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0;url=../send/index.html" />
+    <title>Decimen — redirect</title>
+    <script>location.replace("../send/index.html");</script>
+  <link rel="manifest" href="../manifest.webmanifest"></head>
+  <body>
+    <p><a href="../send/index.html">Continue to Send</a></p>
+  <script>if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    // Already controlled means this is an update rather than a first visit,
+    // and only then is a reload warranted when the new worker takes over.
+    const wasControlled = !!navigator.serviceWorker.controller;
+    let reloading = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!wasControlled || reloading) return;
+      reloading = true;
+      location.reload();
+    });
+    navigator.serviceWorker.register("../sw.js", { scope: "../" }).then((reg) => {
+      const promote = (worker) => worker && worker.postMessage({ type: "SKIP_WAITING" });
+      promote(reg.waiting);
+      reg.addEventListener("updatefound", () => {
+        const next = reg.installing;
+        if (!next) return;
+        next.addEventListener("statechange", () => {
+          if (next.state === "installed") promote(reg.waiting || next);
+        });
+      });
+    });
+  });
+}</script></body>
+</html>
